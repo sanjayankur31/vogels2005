@@ -21,3 +21,35 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import print_function
+import sys
+sys.argv.append('--quiet')
+import nest
+import numpy
+import math
+import random
+
+
+# see the aif source for symbol definitions
+self.neuronDict = {'V_m': -60.,
+                    't_ref': 5.0, 'V_reset': -60.,
+                    'V_th': -50., 'C_m': 200.,
+                    'E_L': -60., 'g_L': 10.,
+                    'E_ex': 0., 'E_in': -80.,
+                    'tau_syn_ex': 5., 'tau_syn_in': 10.}
+# Set up TIF neurons
+# Setting up two models because then it makes it easier for me to get
+# them when I need to set up patterns
+nest.CopyModel("iaf_cond_exp", "tif_neuronE")
+nest.SetDefaults("tif_neuronE", self.neuronDict)
+nest.CopyModel("iaf_cond_exp", "tif_neuronI")
+nest.SetDefaults("tif_neuronI", self.neuronDict)
+
+self.neuronsE = nest.Create('tif_neuronE', 8000)
+self.neuronsI = nest.Create('tif_neuronI', 2000)
+self.poissonExtE = nest.Create('poisson_generator',
+                                self.populations['Poisson'],
+                                params=self.poissonExtDict)
+self.poissonExtI = nest.Create('poisson_generator',
+                                self.populations['Poisson'],
+                                params=self.poissonExtDict)
